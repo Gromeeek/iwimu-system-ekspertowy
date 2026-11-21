@@ -1,0 +1,578 @@
+{
+  "nazwa": "Diagnostyka usterek motocykla",
+  "cel": "diagnoza",
+  "atrybuty": {
+    "rozrusznik": {
+      "typ": "wybor",
+      "pytanie": "Czy rozrusznik kręci silnikiem?",
+      "wartosci": [
+        "kreci",
+        "nie_kreci"
+      ]
+    },
+    "napiecie_v": {
+      "typ": "liczba",
+      "pytanie": "Jakie jest napięcie akumulatora na postoju (V)?",
+      "zakres": [
+        8,
+        15
+      ]
+    },
+    "kontrolka_fi": {
+      "typ": "wybor",
+      "pytanie": "Czy świeci kontrolka usterki wtrysku (FI)?",
+      "wartosci": [
+        "swieci",
+        "nie_swieci"
+      ]
+    },
+    "objaw": {
+      "typ": "wybor",
+      "pytanie": "Jaki jest objaw pracy silnika?",
+      "wartosci": [
+        "nie_odpala",
+        "gasnie",
+        "nierowno",
+        "brak_mocy"
+      ]
+    },
+    "stan_akumulatora": {
+      "typ": "wniosek",
+      "wartosci": [
+        "slaby",
+        "dobry"
+      ]
+    },
+    "etap_problemu": {
+      "typ": "wniosek",
+      "wartosci": [
+        "rozruch",
+        "praca_silnika"
+      ]
+    },
+    "diagnoza": {
+      "typ": "wniosek",
+      "wartosci": [
+        "akumulator",
+        "rozruch",
+        "elektronika",
+        "zaplon",
+        "paliwo",
+        "dolot"
+      ]
+    }
+  },
+  "reguly": [
+    {
+      "id": "R1",
+      "jesli": [
+        [
+          "napiecie_v",
+          "<=",
+          12.0
+        ]
+      ],
+      "to": [
+        "stan_akumulatora",
+        "slaby"
+      ],
+      "metafora": "Poniżej ok. 12 V akumulator jest już osłabiony."
+    },
+    {
+      "id": "R2",
+      "jesli": [
+        [
+          "napiecie_v",
+          ">",
+          12.0
+        ]
+      ],
+      "to": [
+        "stan_akumulatora",
+        "dobry"
+      ],
+      "metafora": "Powyżej 12 V akumulator jest w dobrej kondycji."
+    },
+    {
+      "id": "R3",
+      "jesli": [
+        [
+          "rozrusznik",
+          "==",
+          "nie_kreci"
+        ]
+      ],
+      "to": [
+        "etap_problemu",
+        "rozruch"
+      ],
+      "metafora": "Brak obrotów rozrusznika to problem na etapie rozruchu."
+    },
+    {
+      "id": "R4",
+      "jesli": [
+        [
+          "rozrusznik",
+          "==",
+          "kreci"
+        ]
+      ],
+      "to": [
+        "etap_problemu",
+        "praca_silnika"
+      ],
+      "metafora": "Skoro rozrusznik kręci, szukamy usterki w pracy silnika."
+    },
+    {
+      "id": "R5",
+      "jesli": [
+        [
+          "napiecie_v",
+          "<=",
+          10.5
+        ]
+      ],
+      "to": [
+        "diagnoza",
+        "akumulator"
+      ],
+      "metafora": "Napięcie tak niskie wskazuje na akumulator niezależnie od reszty objawów (reguła nadrzędna).",
+      "coto": "Akumulator jest rozładowany lub zużyty: naładuj go albo sprawdź jego stan i układ ładowania."
+    },
+    {
+      "id": "R6",
+      "jesli": [
+        [
+          "etap_problemu",
+          "==",
+          "rozruch"
+        ],
+        [
+          "stan_akumulatora",
+          "==",
+          "slaby"
+        ]
+      ],
+      "to": [
+        "diagnoza",
+        "akumulator"
+      ],
+      "metafora": "Brak rozruchu i słaby akumulator: brakuje prądu.",
+      "coto": "Akumulator jest rozładowany lub zużyty: naładuj go albo sprawdź jego stan i układ ładowania."
+    },
+    {
+      "id": "R7",
+      "jesli": [
+        [
+          "etap_problemu",
+          "==",
+          "rozruch"
+        ],
+        [
+          "kontrolka_fi",
+          "==",
+          "nie_swieci"
+        ],
+        [
+          "stan_akumulatora",
+          "==",
+          "dobry"
+        ]
+      ],
+      "to": [
+        "diagnoza",
+        "elektronika"
+      ],
+      "metafora": "Akumulator dobry, a nic się nie dzieje i brak kontrolki: zasilanie sterowania.",
+      "coto": "Problem z zasilaniem lub sterowaniem wtryskiem: sprawdź bezpieczniki, stacyjkę, czujniki i błędy sterownika."
+    },
+    {
+      "id": "R8",
+      "jesli": [
+        [
+          "etap_problemu",
+          "==",
+          "rozruch"
+        ],
+        [
+          "kontrolka_fi",
+          "==",
+          "swieci"
+        ],
+        [
+          "stan_akumulatora",
+          "==",
+          "dobry"
+        ]
+      ],
+      "to": [
+        "diagnoza",
+        "rozruch"
+      ],
+      "metafora": "Akumulator dobry, sterowanie żyje: zawodzi sam układ rozruchu.",
+      "coto": "Usterka układu rozruchu: sprawdź przekaźnik rozrusznika, rozrusznik i przewody."
+    },
+    {
+      "id": "R9",
+      "jesli": [
+        [
+          "etap_problemu",
+          "==",
+          "praca_silnika"
+        ],
+        [
+          "kontrolka_fi",
+          "==",
+          "swieci"
+        ],
+        [
+          "stan_akumulatora",
+          "==",
+          "slaby"
+        ]
+      ],
+      "to": [
+        "diagnoza",
+        "akumulator"
+      ],
+      "metafora": "Kontrolka FI przy słabym akumulatorze: za niskie napięcie dla wtrysku.",
+      "coto": "Akumulator jest rozładowany lub zużyty: naładuj go albo sprawdź jego stan i układ ładowania."
+    },
+    {
+      "id": "R10",
+      "jesli": [
+        [
+          "etap_problemu",
+          "==",
+          "praca_silnika"
+        ],
+        [
+          "kontrolka_fi",
+          "==",
+          "swieci"
+        ],
+        [
+          "objaw",
+          "==",
+          "nie_odpala"
+        ],
+        [
+          "stan_akumulatora",
+          "==",
+          "dobry"
+        ]
+      ],
+      "to": [
+        "diagnoza",
+        "elektronika"
+      ],
+      "metafora": "Kontrolka FI i brak odpalenia: czujnik lub sterownik.",
+      "coto": "Problem z zasilaniem lub sterowaniem wtryskiem: sprawdź bezpieczniki, stacyjkę, czujniki i błędy sterownika."
+    },
+    {
+      "id": "R11",
+      "jesli": [
+        [
+          "etap_problemu",
+          "==",
+          "praca_silnika"
+        ],
+        [
+          "kontrolka_fi",
+          "==",
+          "swieci"
+        ],
+        [
+          "objaw",
+          "==",
+          "gasnie"
+        ],
+        [
+          "stan_akumulatora",
+          "==",
+          "dobry"
+        ]
+      ],
+      "to": [
+        "diagnoza",
+        "dolot"
+      ],
+      "metafora": "Kontrolka FI i gaśnięcie: najczęściej fałszywe powietrze w dolocie.",
+      "coto": "Problem z układem dolotowym: sprawdź filtr powietrza i szczelność dolotu."
+    },
+    {
+      "id": "R12",
+      "jesli": [
+        [
+          "etap_problemu",
+          "==",
+          "praca_silnika"
+        ],
+        [
+          "kontrolka_fi",
+          "==",
+          "swieci"
+        ],
+        [
+          "objaw",
+          "==",
+          "nierowno"
+        ],
+        [
+          "stan_akumulatora",
+          "==",
+          "dobry"
+        ]
+      ],
+      "to": [
+        "diagnoza",
+        "elektronika"
+      ],
+      "metafora": "Kontrolka FI i nierówna praca: błąd czujnika.",
+      "coto": "Problem z zasilaniem lub sterowaniem wtryskiem: sprawdź bezpieczniki, stacyjkę, czujniki i błędy sterownika."
+    },
+    {
+      "id": "R13",
+      "jesli": [
+        [
+          "etap_problemu",
+          "==",
+          "praca_silnika"
+        ],
+        [
+          "kontrolka_fi",
+          "==",
+          "swieci"
+        ],
+        [
+          "objaw",
+          "==",
+          "brak_mocy"
+        ],
+        [
+          "stan_akumulatora",
+          "==",
+          "dobry"
+        ]
+      ],
+      "to": [
+        "diagnoza",
+        "dolot"
+      ],
+      "metafora": "Kontrolka FI i brak mocy: zatkany filtr powietrza lub dolot.",
+      "coto": "Problem z układem dolotowym: sprawdź filtr powietrza i szczelność dolotu."
+    },
+    {
+      "id": "R14",
+      "jesli": [
+        [
+          "etap_problemu",
+          "==",
+          "praca_silnika"
+        ],
+        [
+          "kontrolka_fi",
+          "==",
+          "nie_swieci"
+        ],
+        [
+          "objaw",
+          "==",
+          "nie_odpala"
+        ],
+        [
+          "stan_akumulatora",
+          "==",
+          "slaby"
+        ]
+      ],
+      "to": [
+        "diagnoza",
+        "zaplon"
+      ],
+      "metafora": "Słabe napięcie osłabia iskrę, więc silnik nie odpala.",
+      "coto": "Usterka układu zapłonowego: sprawdź świece, cewki i przewody wysokiego napięcia."
+    },
+    {
+      "id": "R15",
+      "jesli": [
+        [
+          "etap_problemu",
+          "==",
+          "praca_silnika"
+        ],
+        [
+          "kontrolka_fi",
+          "==",
+          "nie_swieci"
+        ],
+        [
+          "objaw",
+          "==",
+          "nie_odpala"
+        ],
+        [
+          "stan_akumulatora",
+          "==",
+          "dobry"
+        ]
+      ],
+      "to": [
+        "diagnoza",
+        "paliwo"
+      ],
+      "metafora": "Iskra jest, a silnik nie odpala: brakuje paliwa.",
+      "coto": "Usterka układu paliwowego: sprawdź pompę paliwa, filtr paliwa i wtryskiwacze."
+    },
+    {
+      "id": "R16",
+      "jesli": [
+        [
+          "etap_problemu",
+          "==",
+          "praca_silnika"
+        ],
+        [
+          "kontrolka_fi",
+          "==",
+          "nie_swieci"
+        ],
+        [
+          "objaw",
+          "==",
+          "gasnie"
+        ]
+      ],
+      "to": [
+        "diagnoza",
+        "paliwo"
+      ],
+      "metafora": "Gaśnie bez błędu FI: przerwy w dopływie paliwa.",
+      "coto": "Usterka układu paliwowego: sprawdź pompę paliwa, filtr paliwa i wtryskiwacze."
+    },
+    {
+      "id": "R17",
+      "jesli": [
+        [
+          "etap_problemu",
+          "==",
+          "praca_silnika"
+        ],
+        [
+          "kontrolka_fi",
+          "==",
+          "nie_swieci"
+        ],
+        [
+          "objaw",
+          "==",
+          "nierowno"
+        ],
+        [
+          "stan_akumulatora",
+          "==",
+          "slaby"
+        ]
+      ],
+      "to": [
+        "diagnoza",
+        "zaplon"
+      ],
+      "metafora": "Nierówna praca przy słabym napięciu: iskra.",
+      "coto": "Usterka układu zapłonowego: sprawdź świece, cewki i przewody wysokiego napięcia."
+    },
+    {
+      "id": "R18",
+      "jesli": [
+        [
+          "etap_problemu",
+          "==",
+          "praca_silnika"
+        ],
+        [
+          "kontrolka_fi",
+          "==",
+          "nie_swieci"
+        ],
+        [
+          "objaw",
+          "==",
+          "nierowno"
+        ],
+        [
+          "stan_akumulatora",
+          "==",
+          "dobry"
+        ]
+      ],
+      "to": [
+        "diagnoza",
+        "dolot"
+      ],
+      "metafora": "Nierówna praca przy dobrym napięciu: dolot.",
+      "coto": "Problem z układem dolotowym: sprawdź filtr powietrza i szczelność dolotu."
+    },
+    {
+      "id": "R19",
+      "jesli": [
+        [
+          "etap_problemu",
+          "==",
+          "praca_silnika"
+        ],
+        [
+          "kontrolka_fi",
+          "==",
+          "nie_swieci"
+        ],
+        [
+          "objaw",
+          "==",
+          "brak_mocy"
+        ],
+        [
+          "stan_akumulatora",
+          "==",
+          "slaby"
+        ]
+      ],
+      "to": [
+        "diagnoza",
+        "zaplon"
+      ],
+      "metafora": "Brak mocy przy słabym napięciu: słaba iskra.",
+      "coto": "Usterka układu zapłonowego: sprawdź świece, cewki i przewody wysokiego napięcia."
+    },
+    {
+      "id": "R20",
+      "jesli": [
+        [
+          "etap_problemu",
+          "==",
+          "praca_silnika"
+        ],
+        [
+          "kontrolka_fi",
+          "==",
+          "nie_swieci"
+        ],
+        [
+          "objaw",
+          "==",
+          "brak_mocy"
+        ],
+        [
+          "stan_akumulatora",
+          "==",
+          "dobry"
+        ]
+      ],
+      "to": [
+        "diagnoza",
+        "paliwo"
+      ],
+      "metafora": "Brak mocy przy dobrym napięciu: ograniczony dopływ paliwa.",
+      "coto": "Usterka układu paliwowego: sprawdź pompę paliwa, filtr paliwa i wtryskiwacze."
+    }
+  ]
+}
