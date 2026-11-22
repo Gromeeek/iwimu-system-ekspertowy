@@ -75,3 +75,22 @@ Ograniczenia: etykiety pochodzą z silnika, więc zgodność mierzy tylko, jak d
 trafność diagnoz (to walidacja z etykietami eksperta). Rozkład klas wynika z reguł i równomiernego losowania
 (akumulator 52%, zaplon 4%). Drzewo nie ma pojęć pośrednich (stan_akumulatora, etap_problemu) — progi i
 one-hot zastępują je bezpośrednio.
+
+## Z5: walidacja krzyżowa, strojenie i wybór modelu
+
+```
+python ml/strojenie.py    # ml/wyniki_cv.csv, ml/glebokosc.png, ml/roc.png, ml/raport_oof.json, ml/model.joblib, ml/model_info.json
+```
+
+Wszystkie wyniki pochodzą ze zbioru treningowego (800 przypadków); test z `ml/podzial.json` pozostaje zamknięty do Z6.
+GridSearchCV: `max_depth` ∈ {2, 3, 4, 5, 6, 8, None} × `min_samples_leaf` ∈ {1, 5, 10} (21 ustawień),
+StratifiedGroupKFold(5, shuffle=True, random_state=42), grupa = identyczne wejścia, metryka wyboru `f1_macro`.
+
+**Wybrany model:** `max_depth=5`, `min_samples_leaf=5` (12 liści), macro-F1 w CV = 1,000 ± 0,000.
+Osiem ustawień ma macro-F1 = 1,000 (etykiety pochodzą z silnika, bez szumu). Przy remisie wybrano prostszy
+model: najmniejszą głębokość, a następnie większy `min_samples_leaf` (odporność na pojedyncze przypadki).
+Głębokości 2–4 dają niedouczenie (0,35 / 0,62 / 0,93); od 5 trening i walidacja są równe, więc przeuczenia nie ma.
+
+Dla porównania drzewo `max_depth=4` (też out-of-fold) myli `paliwo → zaplon` (12) i `dolot → elektronika` (11).
+Najkosztowniejsza jest pomyłka `paliwo → zaplon`: silnik gaśnie w czasie jazdy z powodu paliwa, a naprawa
+układu zapłonowego nie usuwa przyczyny. Model zapisany jako Pipeline (`ml/model.joblib`) z listą klas w `ml/model_info.json`.
