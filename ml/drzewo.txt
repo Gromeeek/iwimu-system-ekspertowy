@@ -1,0 +1,34 @@
+|--- napiecie_v <= 12.05
+|   |--- napiecie_v <= 10.55
+|   |   |--- class: akumulator
+|   |--- napiecie_v >  10.55
+|   |   |--- kontrolka_fi_nie_swieci <= 0.50
+|   |   |   |--- class: akumulator
+|   |   |--- kontrolka_fi_nie_swieci >  0.50
+|   |   |   |--- rozrusznik_nie_kreci <= 0.50
+|   |   |   |   |--- objaw_gasnie <= 0.50
+|   |   |   |   |   |--- class: zaplon
+|   |   |   |   |--- objaw_gasnie >  0.50
+|   |   |   |   |   |--- class: paliwo
+|   |   |   |--- rozrusznik_nie_kreci >  0.50
+|   |   |   |   |--- class: akumulator
+|--- napiecie_v >  12.05
+|   |--- rozrusznik_kreci <= 0.50
+|   |   |--- kontrolka_fi_nie_swieci <= 0.50
+|   |   |   |--- class: rozruch
+|   |   |--- kontrolka_fi_nie_swieci >  0.50
+|   |   |   |--- class: elektronika
+|   |--- rozrusznik_kreci >  0.50
+|   |   |--- kontrolka_fi_nie_swieci <= 0.50
+|   |   |   |--- objaw_brak_mocy <= 0.50
+|   |   |   |   |--- objaw_gasnie <= 0.50
+|   |   |   |   |   |--- class: elektronika
+|   |   |   |   |--- objaw_gasnie >  0.50
+|   |   |   |   |   |--- class: dolot
+|   |   |   |--- objaw_brak_mocy >  0.50
+|   |   |   |   |--- class: dolot
+|   |   |--- kontrolka_fi_nie_swieci >  0.50
+|   |   |   |--- objaw_nierowno <= 0.50
+|   |   |   |   |--- class: paliwo
+|   |   |   |--- objaw_nierowno >  0.50
+|   |   |   |   |--- class: dolot

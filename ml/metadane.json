@@ -1,0 +1,23 @@
+{
+  "baza": "moja_dziedzina.json",
+  "ziarno": 42,
+  "liczba_losowan": 1000,
+  "probkowanie": {
+    "rozrusznik": "równomiernie z listy ['kreci', 'nie_kreci']",
+    "napiecie_v": "równomiernie 8–15 z krokiem 0.1",
+    "kontrolka_fi": "równomiernie z listy ['swieci', 'nie_swieci']",
+    "objaw": "równomiernie z listy ['nie_odpala', 'gasnie', 'nierowno', 'brak_mocy']"
+  },
+  "wiersze": 1000,
+  "unikalne_wejscia": 662,
+  "przypadki_bez_decyzji": 0,
+  "szum_etykiet": "brak",
+  "liczebnosc_klas": {
+    "akumulator": 517,
+    "rozruch": 116,
+    "elektronika": 174,
+    "zaplon": 38,
+    "paliwo": 96,
+    "dolot": 59
+  }
+}
